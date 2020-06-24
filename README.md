@@ -1,8 +1,12 @@
-# Project Title
+# ChronoClass - Backend
 
-One Paragraph of project description goes here.
+<p align="center">
+  <img width="15%" src="./docs/logo.png" alt="ChronoClass logo">
+<p>
 
-## Getting Started
+ChronoClass is a solution to manage the distribution of classes in the school year idealized for the Computer Science course at UTFPR - Campus Santa Helena, mostly to avoid conflicts between teachers activities and classes.
+
+## Getting started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
@@ -56,11 +60,8 @@ See also the list of [contributors](https://github.com/mikaelmessias/project/con
 
 ## License
 
-This project is licensed under the **GNU v3.0** license - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the **MIT** license - see the [LICENSE.md](LICENSE.md) file for details.
 
 ## Acknowledgments
-
-- Hat tip to anyone whose code was used
-- Inspiration
 
 - [Billie Thompson](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2)
