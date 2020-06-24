@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"README.md": true,
+			"LICENSE": true,
+			"package-lock.json": true,
+			"app.code-workspace": true,
+			"node_modules": true
+		}
+	}
+}
