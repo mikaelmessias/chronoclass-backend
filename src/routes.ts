@@ -1,6 +1,6 @@
 import express from 'express';
-import PeriodController from './controllers/Period';
-import UserController from './controllers/User';
+import PeriodController from './controllers/PeriodController';
+import UserController from './controllers/UserController';
 // import multer from 'multer';
 // import multerConfig from './utils/multer';
 
