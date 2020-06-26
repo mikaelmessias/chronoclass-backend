@@ -54,6 +54,24 @@ class TeacherController {
     }
   }
 
+  async show(request: Request, response: Response): Promise<Response<any>> {
+    try {
+      const { teacherId } = request.params;
+
+      const teacher = await TeacherSchema.findById(teacherId);
+
+      if (!teacher) {
+        return response.status(404).json({
+          error: 'Document not found for given ID.',
+        });
+      }
+
+      return response.json(teacher);
+    } catch (error) {
+      return response.json(error);
+    }
+  }
+
   async store(request: Request, response: Response): Promise<Response<any>> {
     const {
       name, email, area, availableDays,
