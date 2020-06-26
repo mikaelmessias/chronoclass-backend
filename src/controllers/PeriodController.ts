@@ -37,7 +37,7 @@ class PeriodController {
       return response.json(periods);
     } catch (error) {
       return response.status(400).json({
-        error: 'Error white performing request.',
+        error: 'Error while performing request.',
       });
     }
   }
@@ -168,7 +168,7 @@ class PeriodController {
       let message!: string;
 
       if (error.name === 'MongoError' && error.code === 11000) {
-        message = 'Periods collection already populated.';
+        message = 'Duplicate keys: the periods collection is already populated.';
       }
 
       return response.json({
