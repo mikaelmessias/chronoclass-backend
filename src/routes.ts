@@ -21,5 +21,6 @@ routes.get('/periods', periodController.index);
 routes.post('/periods', periodController.populate);
 
 routes.post('/teacher', teacherController.store);
+routes.get('/teachers', teacherController.index);
 
 export default routes;

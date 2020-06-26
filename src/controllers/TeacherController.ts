@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import TeacherSchema, { Teacher } from '../models/Teacher';
+import TeacherSchema from '../models/Teacher';
 import { Weekday } from '../utils/enums';
 
 interface TeacherBodyParams {
@@ -9,7 +9,51 @@ interface TeacherBodyParams {
   availableDays: string | Weekday[];
 }
 
+interface TeacherQueryParams {
+  availableDays?: string;
+}
+
+interface TeacherQueryFilters {
+  availableDays?: {
+    $in: Weekday[],
+  };
+}
+
 class TeacherController {
+  async index(request: Request, response: Response): Promise<Response<any>> {
+    try {
+      const { availableDays }: TeacherQueryParams = request.query;
+
+      const filters: TeacherQueryFilters = {};
+
+      if (availableDays) {
+        const serializedWeekdays: Weekday[] = availableDays
+          .split(',')
+          .map((day) => {
+            const serializedDay = day.trim().toUpperCase();
+
+            return Weekday[serializedDay as keyof typeof Weekday];
+          });
+
+        filters.availableDays = {
+          $in: serializedWeekdays,
+        };
+      }
+
+      const teachers = await TeacherSchema.find(filters);
+
+      if (!teachers.length) {
+        return response.status(404).json({
+          error: 'Found 0 documents',
+        });
+      }
+
+      return response.json(teachers);
+    } catch (error) {
+      return response.json(error);
+    }
+  }
+
   async store(request: Request, response: Response): Promise<Response<any>> {
     const {
       name, email, area, availableDays,
