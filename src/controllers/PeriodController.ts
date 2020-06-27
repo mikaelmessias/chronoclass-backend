@@ -149,7 +149,7 @@ class PeriodController {
         }
 
         periods.push({
-          _id: weekdayCode + code,
+          weekdayPeriod: weekdayCode + code,
           weekday,
           code,
           startHour,
