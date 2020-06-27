@@ -36,9 +36,7 @@ class PeriodController {
 
       return response.json(periods);
     } catch (error) {
-      return response.status(400).json({
-        error: 'Error while performing request.',
-      });
+      return response.status(400).json(error);
     }
   }
 
@@ -162,18 +160,10 @@ class PeriodController {
 
     try {
       const objects = await PeriodSchema.create(periods);
-      console.log(objects);
+
       return response.json(objects);
     } catch (error) {
-      let message!: string;
-
-      if (error.name === 'MongoError' && error.code === 11000) {
-        message = 'Duplicate keys: the periods collection is already populated.';
-      }
-
-      return response.json({
-        error: message,
-      });
+      return response.status(400).json(error);
     }
   }
 }

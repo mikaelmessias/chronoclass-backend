@@ -8,15 +8,13 @@ class UserController {
 
       if (!users.length) {
         return response.status(404).json({
-          error: 'Found 0 users',
+          error: 'Found 0 documents',
         });
       }
 
       return response.json(users);
     } catch (error) {
-      return response.status(400).json({
-        error: 'Can\'t get users information',
-      });
+      return response.status(400).json(error);
     }
   }
 
@@ -28,15 +26,13 @@ class UserController {
 
       if (!user) {
         return response.status(404).json({
-          error: 'User not found',
+          error: 'Document not found for given ID.',
         });
       }
 
       return response.json(user);
     } catch (error) {
-      return response.status(400).json({
-        error: 'Can\'t get user information',
-      });
+      return response.status(400).json(error);
     }
   }
 
@@ -48,9 +44,7 @@ class UserController {
 
       return response.json(user);
     } catch (error) {
-      return response.status(400).json({
-        error: 'Failed to create user',
-      });
+      return response.status(400).json(error);
     }
   }
 }

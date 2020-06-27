@@ -50,7 +50,7 @@ class TeacherController {
 
       return response.json(teachers);
     } catch (error) {
-      return response.json(error);
+      return response.status(400).json(error);
     }
   }
 
@@ -68,7 +68,7 @@ class TeacherController {
 
       return response.json(teacher);
     } catch (error) {
-      return response.json(error);
+      return response.status(400).json(error);
     }
   }
 
@@ -97,13 +97,7 @@ class TeacherController {
 
       return response.json(teacher);
     } catch (error) {
-      if (error.name === 'MongoError' && error.code === 11000) {
-        return response.json({
-          error: 'Duplicate key: email is already being used',
-        });
-      }
-
-      return response.json(error);
+      return response.status(400).json(error);
     }
   }
 }
