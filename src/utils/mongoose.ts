@@ -9,6 +9,7 @@ const connect = (url: string): void => {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
+    useFindAndModify: false,
   });
 };
 
