@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import CourseSchema from '../models/Course';
 import TeacherSchema from '../models/Teacher';
 import { Weekday } from '../utils/enums';
 
@@ -66,7 +67,12 @@ class TeacherController {
         });
       }
 
-      return response.json(teacher);
+      const courses = await CourseSchema.find({ teacherId }).populate('periodsId', 'weekday, weekdayPeriod').exec();
+
+      return response.json({
+        teacher,
+        courses,
+      });
     } catch (error) {
       return response.status(400).json(error);
     }
