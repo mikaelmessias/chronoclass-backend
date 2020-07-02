@@ -1,4 +1,5 @@
 import express from 'express';
+import ClassController from './controllers/ClassController';
 import CourseController from './controllers/CourseController';
 import PeriodController from './controllers/PeriodController';
 import TeacherController from './controllers/TeacherController';
@@ -11,6 +12,7 @@ const userController = new UserController();
 const periodController = new PeriodController();
 const teacherController = new TeacherController();
 const courseController = new CourseController();
+const classController = new ClassController();
 
 const routes = express.Router();
 // const upload = multer(multerConfig);
@@ -31,5 +33,9 @@ routes.post('/course', courseController.store);
 routes.get('/courses', courseController.index);
 routes.get('/course/:courseId', courseController.show);
 routes.put('/course/:courseId', courseController.update);
+
+routes.post('/class', classController.store);
+routes.get('/classes', classController.index);
+routes.get('/class/:classCode', classController.show);
 
 export default routes;
