@@ -93,13 +93,15 @@ class CourseController {
         if (courseWeekdays.length > 0) {
           let unavailableDays: Weekday[] = [];
 
-          courseWeekdays.map((day) => {
+          courseWeekdays.forEach((day) => {
             if (!teacher.availableDays.includes(day)) {
               unavailableDays.push(day);
             }
           });
 
-          unavailableDays = unavailableDays.filter((day, id) => unavailableDays.indexOf(day) === id);
+          unavailableDays = unavailableDays.filter(
+            (day, id) => unavailableDays.indexOf(day) === id,
+          );
 
           if (unavailableDays.length > 0) {
             return response.status(400).json({
