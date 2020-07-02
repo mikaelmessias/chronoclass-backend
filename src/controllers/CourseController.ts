@@ -56,9 +56,9 @@ class CourseController {
 
   async update(request: Request, response: Response): Promise<Response<any>> {
     const { courseId } = request.params;
+    const courseData: CourseUpdateBody = request.body;
 
     try {
-      const courseData: CourseUpdateBody = request.body;
       const { periodsId, teacherId } = courseData;
       let courseWeekdays: Weekday[] = [];
 
