@@ -1,6 +1,13 @@
+import { Ref } from '@typegoose/typegoose';
 import { Request, Response } from 'express';
-import ClassSchema, { Class } from '../models/Class';
+import ClassSchema from '../models/Class';
+import CourseSchema, { Course } from '../models/Course';
 
+interface ClassCreateBody {
+  code: string;
+  semester: number;
+  courses: string[];
+}
 class ClassController {
   async index(request: Request, response: Response): Promise<Response<any>> {
     try {
@@ -25,7 +32,7 @@ class ClassController {
       const classDoc = await ClassSchema.findOne({ code: classCode })
         .populate({
           path: 'courses',
-          select: '-__v -workload',
+          select: '-__v',
           populate: {
             path: 'periodsId',
             select: 'weekdayPeriod -_id',
@@ -46,14 +53,34 @@ class ClassController {
   }
 
   async store(request: Request, response: Response): Promise<Response<any>> {
-    const classData: Class = request.body;
+    const classData: ClassCreateBody[] = request.body;
 
     try {
-      const classDoc = await ClassSchema.create(classData);
+      const serializePromise = classData.map(async (data) => {
+        const coursesDoc = await CourseSchema.find({ code: { $in: data.courses } });
 
-      console.log(classDoc);
+        const courses: Ref<Course>[] = [];
 
-      return response.json(classDoc);
+        coursesDoc.forEach(async (course) => (
+        // eslint-disable-next-line no-underscore-dangle
+          courses.push(course._id)
+        ));
+
+        return ({
+          ...data,
+          courses,
+        });
+      });
+
+      const serializedClassData = await Promise
+        .all(serializePromise)
+        .then(
+          async (data) => data,
+        );
+
+      const classes = await ClassSchema.create(serializedClassData);
+
+      return response.json(classes);
     } catch (error) {
       return response.status(400).json(error);
     }
