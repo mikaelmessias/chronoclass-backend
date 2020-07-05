@@ -1,8 +1,11 @@
+/* eslint-disable no-underscore-dangle */
 import { Ref } from '@typegoose/typegoose';
 import { Request, Response } from 'express';
-import CourseSchema from '../models/Course';
+import ClassSchema from '../models/Class';
+import CourseSchema, { Course } from '../models/Course';
 import PeriodSchema, { Period } from '../models/Period';
 import TeacherSchema, { Teacher } from '../models/Teacher';
+import findConflict from '../utils/courses';
 import { Weekday } from '../utils/enums';
 
 interface CourseCreateBody {
@@ -18,6 +21,18 @@ interface CourseUpdateBody {
   teacherId?: Ref<Teacher>,
   periodsId?: Ref<Period>[]
 }
+
+interface CourseUpdateParams {
+  params: {
+    courseId: Ref<Course>,
+  }
+}
+type UpdateRequest = Request & CourseUpdateParams;
+
+interface UpdatePeriod {
+  weekday: Weekday,
+  weekdayPeriod: string
+};
 
 class CourseController {
   async index(request: Request, response: Response): Promise<Response<any>> {
@@ -54,13 +69,13 @@ class CourseController {
     }
   }
 
-  async update(request: Request, response: Response): Promise<Response<any>> {
+  async update(request: UpdateRequest, response: Response): Promise<Response<any>> {
     const { courseId } = request.params;
     const courseData: CourseUpdateBody = request.body;
 
     try {
       const { periodsId, teacherId } = courseData;
-      let courseWeekdays: Weekday[] = [];
+      let courseWeekdays: UpdatePeriod[] = [];
 
       if (periodsId) {
         courseWeekdays = await PeriodSchema.find({
@@ -74,10 +89,29 @@ class CourseController {
 
           return true;
         }).map((array) => (
-          array.map((object) => (
-            object.weekday
-          ))
+          array.map((object) => ({
+            weekday: object.weekday,
+            weekdayPeriod: object.weekdayPeriod,
+          }))
         ));
+
+        const classDoc = await ClassSchema
+          .find({ courses: courseId })
+          .populate({
+            path: 'courses',
+            select: 'code',
+            ref: 'Course',
+            populate: {
+              path: 'periodsId',
+              select: 'weekdayPeriod -_id',
+              ref: 'Period',
+            },
+          })
+          .exec();
+
+        if (classDoc.length > 0) {
+          findConflict.class(courseId, classDoc, courseWeekdays);
+        }
       }
 
       if (teacherId) {
@@ -94,8 +128,8 @@ class CourseController {
           let unavailableDays: Weekday[] = [];
 
           courseWeekdays.forEach((day) => {
-            if (!teacher.availableDays.includes(day)) {
-              unavailableDays.push(day);
+            if (!teacher.availableDays.includes(day.weekday)) {
+              unavailableDays.push(day.weekday);
             }
           });
 
@@ -109,6 +143,19 @@ class CourseController {
               weekdays: unavailableDays,
             });
           }
+        }
+
+        const courses = await CourseSchema
+          .find({ teacherId })
+          .populate({
+            path: 'periodsId',
+            select: 'weekdayPeriod -_id',
+            ref: 'Period',
+          })
+          .exec();
+
+        if (courses.length > 0) {
+          findConflict.teacher(courseId, courses, courseWeekdays);
         }
       }
 
@@ -126,7 +173,12 @@ class CourseController {
 
       return response.json(course);
     } catch (error) {
-      return response.status(400).json(error);
+      return response.status(400).json({
+        error: {
+          name: error.name,
+          message: error.message,
+        },
+      });
     }
   }
 
